@@ -35,22 +35,7 @@ services:
     networks:
       - app_network 
 
-  frontend:
-    build:
-      context: ./order-management-FE
-      dockerfile: Dockerfile
-    container_name: order_frontend
-    hostname: order_frontend
-    image: order_frontend
-    restart: always
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-    networks:
-      - app_network
-
-volumes:
+ volumes:
   mongo_data:
     name: my_mongodb_volume
 
