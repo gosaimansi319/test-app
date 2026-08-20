@@ -1,0 +1,48 @@
+name: Deploy Backend
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy Backend to EC2
+    runs-on: BE-runner
+
+    steps:
+      # 1. Get latest code from GitHub
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 2. Create environment file from GitHub Secrets
+      - name: Create .env file
+        run: |
+          cat > .env <<EOF
+          JWT_SECRET=${{ secrets.JWT_SECRET }}
+          MONGO_URI=${{ secrets.MONGO_URI }}
+          PORT=${{ secrets.PORT }}
+          URL=${{ secrets.URL }}
+          EOF
+
+      # 3. Stop existing containers
+      - name: Stop existing containers
+        run: |
+          docker compose down || true
+
+      # 4. Build and start backend services
+      - name: Build and start services
+        run: |
+          docker compose up -d --build
+
+      # 5. Remove unused Docker images
+      - name: Clean up unused Docker images
+        run: |
+          docker image prune -f
+
+      # 6. Check running containers
+      - name: Check container status
+        run: |
+          docker compose ps
