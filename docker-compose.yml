@@ -1,18 +1,15 @@
-version: '3.9'
-
 services:
-
   mongo:
-    image: mongo:6
+    image: mongo:7
     container_name: order_mongo
-    hostname: order_mongo
     restart: always
-    ports:
-      - "27017:27017"
+
     volumes:
       - mongo_data:/data/db
+
     environment:
       MONGO_INITDB_DATABASE: order-management
+
     networks:
       - app_network
 
@@ -20,26 +17,29 @@ services:
     build:
       context: ./order-management-BE
       dockerfile: Dockerfile
-    image: order_backend
+
     container_name: order_backend
     restart: always
+
     ports:
       - "5000:5000"
+
     env_file:
       - ./order-management-BE/.env
+
     environment:
       PORT: 5000
       MONGO_URI: mongodb://mongo:27017/order-management
+
     depends_on:
       - mongo
-    networks:
-      - app_network 
 
- volumes:
+    networks:
+      - app_network
+
+volumes:
   mongo_data:
-    name: my_mongodb_volume
 
 networks:
   app_network:
-    name: app_network
     driver: bridge
