@@ -4,16 +4,12 @@ services:
     container_name: order_mongo
     hostname: order_mongo
     restart: always
-
     ports:
       - "27017:27017"
-
     volumes:
       - mongo_data:/data/db
-
     environment:
       MONGO_INITDB_DATABASE: order-management
-
     networks:
       - app_network
 
@@ -21,39 +17,34 @@ services:
     build:
       context: ./order-management-BE
       dockerfile: Dockerfile
-
-    image: order_backend
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_BACKEND}:${IMAGE_TAG}
     container_name: order_backend
     restart: always
-
     ports:
       - "5000:5000"
-
     env_file:
       - ./order-management-BE/.env
-
     environment:
       PORT: 5000
       MONGO_URI: mongodb://mongo:27017/order-management
-
     depends_on:
       - mongo
-      
-   frontend: 
-     build: context: ./order-management-FE 
-     dockerfile: Dockerfile 
-     
-     image: order_frontend 
-     container_name: order_frontend 
-     restart: always 
-     
-     ports: - "5173:80" 
+    networks:
+      - app_network
 
-     env_file:
+  frontend:
+    build:
+      context: ./order-management-FE
+      dockerfile: Dockerfile
+    image: ${ECR_REGISTRY}/${ECR_REPOSITORY_FRONTEND}:${IMAGE_TAG}
+    container_name: order_frontend
+    restart: always
+    ports:
+      - "5173:80"
+    env_file:
       - ./order-management-FE/.env
-
-     depends_on: - backend   
-
+    depends_on:
+      - backend
     networks:
       - app_network
 
