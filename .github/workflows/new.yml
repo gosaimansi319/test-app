@@ -8,7 +8,7 @@ permissions:
   contents: read
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: [self-hosted, my-runner]
     environment: AWS
     steps:
       - name: Checkout code
@@ -17,10 +17,10 @@ jobs:
       - name: Create .env file
         run: |
           cat <<EOF > .env
-          VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
           PORT=5000
           MONGO_URI=${{ secrets.MONGO_URI }}
           JWT_SECRET=${{ secrets.JWT_SECRET }}
+          VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
           EOF
 
       - name: Configure AWS credentials
@@ -38,6 +38,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY_FRONTEND: ${{ secrets.ECR_REPOSITORY_FRONTEND }}
+          ECR_REPOSITORY_BACKEND: ${{ secrets.ECR_REPOSITORY_BACKEND }}
           IMAGE_TAG: v${{ github.run_number }}
         run: |
           docker compose build frontend
@@ -49,6 +50,7 @@ jobs:
       - name: Build & Push Backend Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY_FRONTEND: ${{ secrets.ECR_REPOSITORY_FRONTEND }}
           ECR_REPOSITORY_BACKEND: ${{ secrets.ECR_REPOSITORY_BACKEND }}
           IMAGE_TAG: v${{ github.run_number }}
         run: |
