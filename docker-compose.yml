@@ -38,6 +38,21 @@ services:
 
     depends_on:
       - mongo
+      
+   frontend: 
+     build: context: ./order-management-FE 
+     dockerfile: Dockerfile 
+     
+     image: order_frontend 
+     container_name: order_frontend 
+     restart: always 
+     
+     ports: - "5173:80" 
+
+     env_file:
+      - ./order-management-FE/.env
+
+     depends_on: - backend   
 
     networks:
       - app_network
