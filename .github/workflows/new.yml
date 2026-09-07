@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: my-self-hosted-runner
     environment: AWS
 
     steps:
