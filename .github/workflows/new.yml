@@ -28,14 +28,6 @@ jobs:
           JWT_SECRET=${{ secrets.JWT_SECRET }}
           EOF
 
-      - name: Create backend .env file
-        run: |
-          cat <<EOF > ./backend/.env
-          PORT=5000
-          MONGO_URI=${{ secrets.MONGO_URI }}
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          EOF
-
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
