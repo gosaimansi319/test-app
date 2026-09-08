@@ -22,16 +22,22 @@ jobs:
         uses: actions/checkout@v4
 
 
-      # 2. Create .env file
-      - name: Create .env file
+      # 2. Create Backend .env
+      - name: Create Backend .env
         run: |
-          cat <<EOF > .env
+          cat <<EOF > order-management-BE/.env
           PORT=5000
           MONGO_URI=${{ secrets.MONGO_URI }}
           JWT_SECRET=${{ secrets.JWT_SECRET }}
-          VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
           EOF
 
+
+      # 3. Create Frontend .env
+      - name: Create Frontend .env
+        run: |
+          cat <<EOF > order-management-FE/.env
+          VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
+          EOF
 
       # 3. Configure AWS credentials
       - name: Configure AWS credentials
