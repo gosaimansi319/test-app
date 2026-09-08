@@ -20,6 +20,7 @@ services:
       context: ./order-management-BE
       dockerfile: Dockerfile
     image: ${ECR_REGISTRY}/backend-repo:${IMAGE_TAG}
+    hostname: order_backend
     container_name: order_backend
     restart: always
     ports:
@@ -40,6 +41,7 @@ services:
       context: ./order-management-FE
       dockerfile: Dockerfile
     image: ${ECR_REGISTRY}/frontend-repo:${IMAGE_TAG}
+    hostname: order_frontend
     container_name: order_frontend
     restart: always
     ports:
