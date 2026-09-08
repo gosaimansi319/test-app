@@ -1,19 +1,28 @@
 name: Build and Push Images
+
 on:
   push:
     branches:
       - main
+
   workflow_dispatch:
+
 permissions:
   contents: read
+
 jobs:
   deploy:
     runs-on: [self-hosted, my-runner]
     environment: AWS
+
     steps:
+
+      # 1. Checkout code
       - name: Checkout code
         uses: actions/checkout@v4
 
+
+      # 2. Create .env file
       - name: Create .env file
         run: |
           cat <<EOF > .env
@@ -23,6 +32,8 @@ jobs:
           VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
           EOF
 
+
+      # 3. Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -30,32 +41,44 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+
+      # 4. Login to Amazon ECR
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+
+      # 5. Build & Push Frontend Image
       - name: Build & Push Frontend Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY_FRONTEND: ${{ secrets.ECR_REPOSITORY_FRONTEND }}
-          ECR_REPOSITORY_BACKEND: ${{ secrets.ECR_REPOSITORY_BACKEND }}
           IMAGE_TAG: v${{ github.run_number }}
         run: |
           docker compose build frontend
+
           docker compose push frontend
 
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY_FRONTEND:latest
+          docker tag \
+            $ECR_REGISTRY/frontend-repo:$IMAGE_TAG \
+            $ECR_REGISTRY/frontend-repo:latest
 
+          docker push \
+            $ECR_REGISTRY/frontend-repo:latest
+
+
+      # 6. Build & Push Backend Image
       - name: Build & Push Backend Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY_FRONTEND: ${{ secrets.ECR_REPOSITORY_FRONTEND }}
-          ECR_REPOSITORY_BACKEND: ${{ secrets.ECR_REPOSITORY_BACKEND }}
           IMAGE_TAG: v${{ github.run_number }}
         run: |
           docker compose build backend
+
           docker compose push backend
 
-          docker tag $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:latest
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND:latest
+          docker tag \
+            $ECR_REGISTRY/backend-repo:$IMAGE_TAG \
+            $ECR_REGISTRY/backend-repo:latest
+
+          docker push \
+            $ECR_REGISTRY/backend-repo:latest
