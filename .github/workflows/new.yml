@@ -88,4 +88,4 @@ jobs:
             $ECR_REGISTRY/backend-repo:latest
 
           docker push \
-            $ECR_REGISTRY/backend-repo:lates
+            $ECR_REGISTRY/backend-repo:latest
