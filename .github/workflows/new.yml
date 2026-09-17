@@ -39,7 +39,7 @@ jobs:
           VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}
           EOF
 
-      # 3. Configure AWS credentials
+      # 4. Configure AWS credentials
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -48,17 +48,18 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
 
-      # 4. Login to Amazon ECR
+      # 5. Login to Amazon ECR
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
 
-      # 5. Build & Push Frontend Image
+      # 6. Build & Push Frontend Image
       - name: Build & Push Frontend Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: v${{ github.run_number }}
+          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
         run: |
           docker compose build frontend
 
@@ -72,7 +73,7 @@ jobs:
             $ECR_REGISTRY/frontend-repo:latest
 
 
-      # 6. Build & Push Backend Image
+      # 7. Build & Push Backend Image
       - name: Build & Push Backend Image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -87,4 +88,4 @@ jobs:
             $ECR_REGISTRY/backend-repo:latest
 
           docker push \
-            $ECR_REGISTRY/backend-repo:latest
+            $ECR_REGISTRY/backend-repo:lates
