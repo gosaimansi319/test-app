@@ -34,7 +34,7 @@ jobs:
       # 3. Create Frontend .env
       - name: Create Frontend .env
         run: |
-          echo "VITE_API_BASE_URL=${{ secrets.VITE_API_BASE_URL }}" > order-management-FE/.env
+          echo "VITE_BASE_URL=${{ secrets.VITE_BASE_URL }}" > order-management-FE/.env
 
 
       # 4. Configure AWS credentials
@@ -57,7 +57,7 @@ jobs:
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           IMAGE_TAG: v${{ github.run_number }}
-          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
+          VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }}
         run: |
           docker compose build --no-cache frontend
 
