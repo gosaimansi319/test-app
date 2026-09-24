@@ -7,8 +7,9 @@ RUN npm install
 
 COPY . .
 
-ENV NODE_ENV=production
-ENV PORT=5000
+ENV NODE_ENV=production \
+	PORT=5000 \
+	MONGO_URI=mongodb://mongo:27017/order-management
 
 EXPOSE 5000
 
