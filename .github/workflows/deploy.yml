@@ -4,10 +4,6 @@ on:
   push:
     branches:
       - main
-<<<<<<< HEAD
-
-=======
->>>>>>> 3814f6a (updated files)
   workflow_dispatch:
 
 permissions:
@@ -15,34 +11,6 @@ permissions:
 
 jobs:
   deploy:
-<<<<<<< HEAD
-    runs-on: ubuntu-latest
-
-    steps:
-
-      # 1. Checkout code
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-
-      # 2. Create Backend .env
-      - name: Create Backend .env
-        run: |
-          cat > order-management-BE/.env << 'EOF'
-          PORT=5000
-          MONGO_URI=${{ secrets.MONGO_URI }}
-          JWT_SECRET=${{ secrets.JWT_SECRET }}
-          EOF
-
-
-      # 3. Create Frontend .env
-      - name: Create Frontend .env
-        run: |
-          echo "VITE_BASE_URL=${{ secrets.VITE_BASE_URL }}" > order-management-FE/.env
-
-
-      # 4. Configure AWS credentials
-=======
     runs-on: self-hosted
     environment: production
 
@@ -87,7 +55,6 @@ jobs:
         run: |
           echo "VITE_BASE_URL=${VITE_BASE_URL}" > order-management-FE/.env
 
->>>>>>> 3814f6a (updated files)
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -95,53 +62,10 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-<<<<<<< HEAD
-
-      # 5. Login to Amazon ECR
-=======
->>>>>>> 3814f6a (updated files)
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
-<<<<<<< HEAD
-
-      # 6. Build & Push Frontend Image
-      - name: Build & Push Frontend Image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: v${{ github.run_number }}
-          VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }}
-        run: |
-          docker compose build --no-cache frontend
-
-          docker compose push frontend
-
-          docker tag \
-            $ECR_REGISTRY/frontend-repo:$IMAGE_TAG \
-            $ECR_REGISTRY/frontend-repo:latest
-
-          docker push \
-            $ECR_REGISTRY/frontend-repo:latest
-
-
-      # 7. Build & Push Backend Image
-      - name: Build & Push Backend Image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          IMAGE_TAG: v${{ github.run_number }}
-        run: |
-          docker compose build backend
-
-          docker compose push backend
-
-          docker tag \
-            $ECR_REGISTRY/backend-repo:$IMAGE_TAG \
-            $ECR_REGISTRY/backend-repo:latest
-
-          docker push \
-            $ECR_REGISTRY/backend-repo:latest
-=======
       - name: Build & Push Backend Image
         run: |
           docker build \
@@ -180,4 +104,4 @@ jobs:
           done
           echo "Application did not start successfully"
           exit 1
->>>>>>> 3814f6a (updated files)
+

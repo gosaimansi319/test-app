@@ -14,12 +14,11 @@ services:
     networks:
       - app_network
 
-
   backend:
     build:
       context: ./order-management-BE
       dockerfile: Dockerfile
-    image: ${ECR_REGISTRY}/backend-repo:${IMAGE_TAG}
+    image: ${ECR_REGISTRY:-order_backend}/backend-repo:${IMAGE_TAG:-latest}
     hostname: order_backend
     container_name: order_backend
     restart: always
@@ -34,18 +33,14 @@ services:
       - mongo
     networks:
       - app_network
-<<<<<<< HEAD
-
-=======
->>>>>>> 3814f6a (updated files)
 
   frontend:
     build:
       context: ./order-management-FE
       dockerfile: Dockerfile
       args:
-        VITE_BASE_URL: ${VITE_BASE_URL}
-    image: ${ECR_REGISTRY}/frontend-repo:${IMAGE_TAG}
+        VITE_BASE_URL: ${VITE_BASE_URL:-http://localhost:5000}
+    image: ${ECR_REGISTRY:-order_frontend}/frontend-repo:${IMAGE_TAG:-latest}
     hostname: order_frontend
     container_name: order_frontend
     restart: always
@@ -58,11 +53,9 @@ services:
     networks:
       - app_network
 
-
 volumes:
   mongo_data:
     name: my_mongodb_volume
-
 
 networks:
   app_network:
