@@ -4,7 +4,10 @@ on:
   push:
     branches:
       - main
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3814f6a (updated files)
   workflow_dispatch:
 
 permissions:
@@ -12,6 +15,7 @@ permissions:
 
 jobs:
   deploy:
+<<<<<<< HEAD
     runs-on: ubuntu-latest
 
     steps:
@@ -38,6 +42,52 @@ jobs:
 
 
       # 4. Configure AWS credentials
+=======
+    runs-on: self-hosted
+    environment: production
+
+    env:
+      NODE_ENV: production
+      PORT: 5000
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      URL: ${{ secrets.URL }}
+      EMAIL_USER: ${{ secrets.EMAIL_USER }}
+      EMAIL_PASS: ${{ secrets.EMAIL_PASS }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      VITE_BASE_URL: ${{ secrets.VITE_BASE_URL }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+      IMAGE_TAG: v${{ github.run_number }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Backend .env
+        run: |
+          cat > order-management-BE/.env <<EOF
+          PORT=${PORT}
+          NODE_ENV=${NODE_ENV}
+          DB_HOST=${DB_HOST}
+          DB_PORT=${DB_PORT}
+          DB_NAME=${DB_NAME}
+          DB_USER=${DB_USER}
+          DB_PASSWORD=${DB_PASSWORD}
+          JWT_SECRET=${JWT_SECRET}
+          URL=${URL}
+          EMAIL_USER=${EMAIL_USER}
+          EMAIL_PASS=${EMAIL_PASS}
+          EOF
+
+      - name: Create Frontend .env
+        run: |
+          echo "VITE_BASE_URL=${VITE_BASE_URL}" > order-management-FE/.env
+
+>>>>>>> 3814f6a (updated files)
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -45,12 +95,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+<<<<<<< HEAD
 
       # 5. Login to Amazon ECR
+=======
+>>>>>>> 3814f6a (updated files)
       - name: Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v2
 
+<<<<<<< HEAD
 
       # 6. Build & Push Frontend Image
       - name: Build & Push Frontend Image
@@ -87,3 +141,43 @@ jobs:
 
           docker push \
             $ECR_REGISTRY/backend-repo:latest
+=======
+      - name: Build & Push Backend Image
+        run: |
+          docker build \
+            -t ${{ steps.login-ecr.outputs.registry }}/backend-repo:${IMAGE_TAG} \
+            -t ${{ steps.login-ecr.outputs.registry }}/backend-repo:latest \
+            ./order-management-BE
+
+          docker push ${{ steps.login-ecr.outputs.registry }}/backend-repo:${IMAGE_TAG}
+          docker push ${{ steps.login-ecr.outputs.registry }}/backend-repo:latest
+
+      - name: Build & Push Frontend Image
+        run: |
+          docker build \
+            --build-arg VITE_BASE_URL=${VITE_BASE_URL} \
+            -t ${{ steps.login-ecr.outputs.registry }}/frontend-repo:${IMAGE_TAG} \
+            -t ${{ steps.login-ecr.outputs.registry }}/frontend-repo:latest \
+            ./order-management-FE
+
+          docker push ${{ steps.login-ecr.outputs.registry }}/frontend-repo:${IMAGE_TAG}
+          docker push ${{ steps.login-ecr.outputs.registry }}/frontend-repo:latest
+
+      - name: Deploy application on self-hosted runner
+        run: |
+          docker compose down --remove-orphans || true
+          docker compose up -d --build
+          docker compose ps
+
+      - name: Health check
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost:5000 >/dev/null 2>&1; then
+              echo "Application is running on port 5000"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Application did not start successfully"
+          exit 1
+>>>>>>> 3814f6a (updated files)

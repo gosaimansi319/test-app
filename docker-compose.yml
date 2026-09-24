@@ -34,7 +34,10 @@ services:
       - mongo
     networks:
       - app_network
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3814f6a (updated files)
 
   frontend:
     build:
