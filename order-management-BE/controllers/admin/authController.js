@@ -6,6 +6,12 @@ const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const { generateSignedUrl, uploadFileToS3 } = require("../../utils/s3");
 
+const getRoleName = (role) => {
+  if (!role) return null;
+  if (typeof role === "object" && role.name) return role.name;
+  return role;
+};
+
 const register = async (req, res) => {
   const { email, role_id } = req.body;
 
@@ -109,7 +115,7 @@ const login = async (req, res) => {
       ? generateSignedUrl(user.image)
       : null;
 
-    userObj.role_name = user.role_id.name;
+    userObj.role_name = getRoleName(user.role_id);
 
     res.status(200).json({
       status: "success",
@@ -382,9 +388,11 @@ const updateUserProfile = async (req, res) => {
 
     // User are not allowed to update this
     // role_id, status, company, department, center_cost fields
+    const currentUserRoleName = getRoleName(req.user.role_id);
+
     if (
-      req.user.role_id.name !== "admin" &&
-      req.user.role_id.name !== "manager"
+      currentUserRoleName !== "admin" &&
+      currentUserRoleName !== "manager"
     ) {
 
       if ("role_id" in req.body) {
