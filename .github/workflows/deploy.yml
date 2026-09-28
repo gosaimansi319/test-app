@@ -38,18 +38,18 @@ jobs:
       - name: Create Backend .env
         run: |
           cat > order-management-BE/.env <<EOF
-PORT=${PORT}
-NODE_ENV=${NODE_ENV}
-DB_HOST=${DB_HOST}
-DB_PORT=${DB_PORT}
-DB_NAME=ordermanagement
-DB_USER=${DB_USER}
-DB_PASSWORD=${DB_PASSWORD}
-JWT_SECRET=${JWT_SECRET}
-URL=${URL}
-EMAIL_USER=${EMAIL_USER}
-EMAIL_PASS=${EMAIL_PASS}
-EOF
+          PORT=${PORT}
+          NODE_ENV=${NODE_ENV}
+          DB_HOST=${DB_HOST}
+          DB_PORT=${DB_PORT}
+          DB_NAME=${DB_NAME}
+          DB_USER=${DB_USER}
+          DB_PASSWORD=${DB_PASSWORD}
+          JWT_SECRET=${JWT_SECRET}
+          URL=${URL}
+          EMAIL_USER=${EMAIL_USER}
+          EMAIL_PASS=${EMAIL_PASS}
+          EOF
 
       - name: Create Frontend .env
         run: |
@@ -86,4 +86,22 @@ EOF
 
           docker push ${{ steps.login-ecr.outputs.registry }}/frontend-repo:${IMAGE_TAG}
           docker push ${{ steps.login-ecr.outputs.registry }}/frontend-repo:latest
+
+      - name: Deploy application on self-hosted runner
+        run: |
+          docker compose down --remove-orphans || true
+          docker compose up -d --build
+          docker compose ps
+
+      - name: Health check
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost:5000 >/dev/null 2>&1; then
+              echo "Application is running on port 5000"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "Application did not start successfully"
+          exit 1
 
