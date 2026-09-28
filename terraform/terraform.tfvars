@@ -1,0 +1,8 @@
+aws_region    = "ap-south-1"
+domain        = "somyap.online"
+app_subdomain = "app.somyap.online"
+api_subdomain = "api.somyap.online"
+db_password   = "12345678"
+jwt_secret    = "MERN"
+email_user    = ""
+email_pass    = ""
