@@ -38,18 +38,18 @@ jobs:
       - name: Create Backend .env
         run: |
           cat > order-management-BE/.env <<EOF
-          PORT=${PORT}
-          NODE_ENV=${NODE_ENV}
-          DB_HOST=${DB_HOST}
-          DB_PORT=${DB_PORT}
-          DB_NAME=ordermanagement
-          DB_USER=${DB_USER}
-          DB_PASSWORD=${DB_PASSWORD}
-          JWT_SECRET=${JWT_SECRET}
-          URL=${URL}
-          EMAIL_USER=${EMAIL_USER}
-          EMAIL_PASS=${EMAIL_PASS}
-          EOF
+PORT=${PORT}
+NODE_ENV=${NODE_ENV}
+DB_HOST=${DB_HOST}
+DB_PORT=${DB_PORT}
+DB_NAME=ordermanagement
+DB_USER=${DB_USER}
+DB_PASSWORD=${DB_PASSWORD}
+JWT_SECRET=${JWT_SECRET}
+URL=${URL}
+EMAIL_USER=${EMAIL_USER}
+EMAIL_PASS=${EMAIL_PASS}
+EOF
 
       - name: Create Frontend .env
         run: |
